@@ -1,0 +1,14 @@
+C:\Users\Lord Adwond\Desktop\Варава\sources\FFT experiments\FFT_realize\bin\Debug\FFT_realize.exe.config
+C:\Users\Lord Adwond\Desktop\Варава\sources\FFT experiments\FFT_realize\bin\Debug\FFT_realize.exe
+C:\Users\Lord Adwond\Desktop\Варава\sources\FFT experiments\FFT_realize\bin\Debug\FFT_realize.pdb
+C:\Users\Lord Adwond\Desktop\Варава\sources\FFT experiments\FFT_realize\obj\Debug\FFT_realize.csproj.AssemblyReference.cache
+C:\Users\Lord Adwond\Desktop\Варава\sources\FFT experiments\FFT_realize\obj\Debug\FFT_realize.csproj.CoreCompileInputs.cache
+C:\Users\Lord Adwond\Desktop\Варава\sources\FFT experiments\FFT_realize\obj\Debug\FFT_realize.exe
+C:\Users\Lord Adwond\Desktop\Варава\sources\FFT experiments\FFT_realize\obj\Debug\FFT_realize.pdb
+D:\work\ШТОРМ\DFT_optimize\bin\Debug\DFT_optimize.exe.config
+D:\work\ШТОРМ\DFT_optimize\bin\Debug\DFT_optimize.exe
+D:\work\ШТОРМ\DFT_optimize\bin\Debug\DFT_optimize.pdb
+D:\work\ШТОРМ\DFT_optimize\obj\Debug\FFT_realize.csproj.AssemblyReference.cache
+D:\work\ШТОРМ\DFT_optimize\obj\Debug\FFT_realize.csproj.CoreCompileInputs.cache
+D:\work\ШТОРМ\DFT_optimize\obj\Debug\DFT_optimize.exe
+D:\work\ШТОРМ\DFT_optimize\obj\Debug\DFT_optimize.pdb

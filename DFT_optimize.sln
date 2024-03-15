@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.34601.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFT_realize", "FFT_realize.csproj", "{356552BD-4813-4467-810E-31D0A4176156}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{356552BD-4813-4467-810E-31D0A4176156}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{356552BD-4813-4467-810E-31D0A4176156}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{356552BD-4813-4467-810E-31D0A4176156}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{356552BD-4813-4467-810E-31D0A4176156}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7961139F-32CE-4C76-8B3E-DDDA63F22FF2}
+	EndGlobalSection
+EndGlobal

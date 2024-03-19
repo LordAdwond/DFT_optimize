@@ -10,62 +10,63 @@ namespace DFT_optimize
     {
         static public Complex[] Calc_DFT(double[] arr)
         {
-            Complex[] dft = new Complex[arr.Length];
-            Complex neg_j = new Complex(0, -1);
-
-            for (int k = 0; k < arr.Length; k++)
+            int q = (int)Math.Log(arr.Length, 2);
+            int N = (int)Math.Pow(2, q);
+            Complex[] dft = new Complex[N];
+            int n = 0, k = 0;
+            double pi = Math.PI;
+            double Real = 0, Imag = 0;
+            
+            for (n = 0; n < N; n++)
             {
-                dft[k] = new Complex(0, 0);
-                for (int i = 0; i < arr.Length; i++)
+                Real = Imag = 0;
+                
+                dft[n] = new Complex(0, 0);
+
+                for(k = 0; k < N; k++)
                 {
-                    dft[k].SetValue(dft[k] + arr[i] * Complex.Exp(2 * i * k * Math.PI * neg_j / arr.Length));
-                    dft[k].SetValue(dft[k] / arr.Length);
+                    Real += arr[k] * Math.Cos(pi * n * k / N);
+                    Imag -= arr[k] * Math.Cos(pi * n * k / N);
                 }
+
+                dft[n].real = Real;
+                dft[n].imag = Imag;
             }
+            
 
             return dft;
         }
 
-        static public Complex[] Calc_DFT(double[] arr, int min_freq, int max_freq) // to calculate DFT to frequencies in selected interval
-        {
-            Complex[] dft = new Complex[max_freq-min_freq];
-            Complex neg_j = new Complex(0, -1);
-
-            if(min_freq<1 || max_freq>arr.Length)
-            {
-                throw new ArgumentException("Incorrect interval of frequencies");
-            }
-
-            for (int k = 0, K = min_freq; k < max_freq - min_freq && K<= max_freq; k++, K++)
-            {
-                dft[k] = new Complex(0, 0);
-                for (int i = 0; i < arr.Length; i++)
-                {
-                    dft[k].SetValue(dft[k] + arr[i] * Complex.Exp(2 * i * K * Math.PI * neg_j / arr.Length));
-                    dft[k].SetValue(dft[k] / arr.Length);
-                }
-            }
-
-            return dft;
-        }
 
         static public Complex[] optimized_DFT(double[] arr)
         {
             int q = (int)Math.Log(arr.Length, 2);
             int N = (int)Math.Pow(2, q);
-            Complex[] dft = new Complex[N];
-            Complex neg_j = new Complex(0, -1);
+            int N4 = N / 4, N2 = N / 2, N34 = 3 * N / 4;
 
-            for (int k = 0; k < N; k++)
+            Complex[] dft = new Complex[N];
+            int n = 0, k = 0;
+            double coef = 0.25 * Math.PI / N;
+            double coef_n = 0;
+            double sqr2 = Math.Sqrt(2);
+            double Real = 0, Imag = 0;
+
+            var ForDFT = Parallel.For(0, N, (i, state) => {
+            Real = Imag = 0;
+            dft[n] = new Complex(0, 0);
+            coef_n = coef * n;
+            for (k = 0; k < Math.Pow(2, q - 2); k++)
             {
-                dft[k] = new Complex(0, 0);
-                for (int i = 0; i < N / 4; i++)
-                {
-                    Complex Multiplier = arr[i] + arr[i + N / 4] * Complex.Exp(-Math.PI * k * neg_j / 4);
-                    Multiplier = Multiplier + arr[i + N / 2] * Complex.Exp(Math.PI * k * neg_j / 2) + arr[i + 3 * N / 4] * Complex.Exp(3 * Math.PI * k * neg_j / 4);
-                    dft[k].SetValue(dft[k] + Multiplier * Complex.Exp(2 * i * k * Math.PI * neg_j / arr.Length) / N);
-                }
+                Real += arr[k] * sqr2 * Math.Cos(coef_n * (4 * k - N)) + arr[k + N4] * Math.Cos(coef_n * (4 * k + N));
+                Real += arr[k + N2] * Math.Cos(2 * coef_n * (2 * k + N)) + arr[k + N34] * Math.Cos(coef_n * (4 * k + 3 * N));
+
+                Imag -= arr[k] * sqr2 * Math.Sin(coef_n * (4 * k + 3 * N)) + arr[k + N4] * Math.Sin(coef_n * (4 * k + N));
+                Imag -= arr[k + N2] * Math.Sin(2 * coef_n * (2 * k + N)) + arr[k + N34] * Math.Sin(coef_n * (4 * k + 3 * N));
             }
+
+                dft[n].real = Real;
+                dft[n].imag = Imag;
+            });
 
             return dft;
         }

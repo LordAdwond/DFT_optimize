@@ -69,12 +69,7 @@ namespace DFT_optimize
         }
         public static Complex Exp(Complex z)
         {
-            Complex res = new Complex(1, 0);
-            for (int k = 1; k <= 12; k++)
-            {
-                res.SetValue(res + Complex.Pow(z, k) / Factorial(k));
-            }
-            return res;
+            return new Complex(Math.Exp(z.real) * Math.Cos(z.imag), Math.Exp(z.real) * Math.Sin(z.imag));
         }
         private static double Factorial(int n)
         {

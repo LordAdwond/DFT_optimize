@@ -14,16 +14,17 @@ namespace DFT_optimize
         {
             String str;
             Stopwatch stopwatch = new Stopwatch();
-            int N = 0, i=0;
-            int l = 512, step = 400;
+            int N = 0, i=0, k=0;
+            int l = 512, step = 100;
             int dl = 2 * l;
             int acc = 1;
+            bool to_continue = true;
 
             // data reading
             N = File.ReadAllLines("data/channel0.txt").Length;
             double[,] samples = new double[4, N];
 
-            for (int channel = 0; channel < 1; channel++)
+            for (int channel = 0; channel < 4; channel++)
             {
                 String[] signal_str_values = File.ReadAllLines($"data/channel{channel}.txt");
                 N = signal_str_values.Length;
@@ -42,17 +43,28 @@ namespace DFT_optimize
                 double[] arr = new double[N];
                 for (i = 0; i < N; i++)
                 {
-                    arr[i] = samples[channel, i];
-                }
-                for(int a=0; a<N - dl * acc; a+=step)
-                {
                     try
                     {
-                        var dft = DFT.Calc_DFT(arr, dl * acc, a); // usual DFT
+                        arr[i] = samples[channel, i];
                     }
-                    catch (Exception e)
+                    catch(Exception e)
                     {
+                        to_continue = false;
                         break;
+                    }
+                }
+                if(to_continue)
+                {
+                    for (int a = 0; a < N - dl * acc; a += step)
+                    {
+                        try
+                        {
+                            var dft = DFT.Calc_DFT(arr, dl * acc, a); // usual DFT
+                        }
+                        catch (Exception e)
+                        {
+                            break;
+                        }
                     }
                 }
             }
@@ -60,29 +72,45 @@ namespace DFT_optimize
             Console.WriteLine($"DFT needed {stopwatch.ElapsedMilliseconds} milliseconds");
 
             Console.WriteLine("Testing modifide DFT");
+            to_continue = true;
             stopwatch.Start();
             for (int channel = 0; channel < 1; channel++)
             {
                 double[] arr = new double[N];
                 for (i = 0; i < N; i++)
                 {
-                    arr[i] = samples[channel, i];
-                }
-                for (int a = 0; a < N - dl * acc; a += step)
-                {
                     try
                     {
-                        var dft = DFT.optimized_DFT(arr, dl * acc, a); // optimized DFT
+                        arr[i] = samples[channel, i];
                     }
                     catch (Exception e)
                     {
+                        to_continue = false;
                         break;
+                    }
+                }
+                if(to_continue)
+                {
+                    for (int a = 0; a < N - dl * acc; a += step)
+                    {
+                        try
+                        {
+                            for (k = 0; k < 128 * acc; k++) // обчислення амплітуд для 1-128 Гц
+                            {
+                                var dft = DFT.optimized_DFT(arr, dl * acc, k + 1, a); // optimized DFT
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            break;
+                        }
                     }
                 }
             }
             stopwatch.Stop();
             Console.WriteLine($"Modified DFT needed {stopwatch.ElapsedMilliseconds} milliseconds");
 
+            /*
             Console.WriteLine("Testing FFT by Cooley-Tuley method");
             stopwatch.Start();
             for (int channel = 0; channel < 4; channel++)
@@ -106,6 +134,7 @@ namespace DFT_optimize
             }
             stopwatch.Stop();
             Console.WriteLine($"Modified DFT needed {stopwatch.ElapsedMilliseconds} milliseconds");
+            */
 
             str = Console.ReadLine();
         }

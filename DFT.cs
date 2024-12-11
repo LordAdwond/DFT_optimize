@@ -11,17 +11,11 @@ namespace DFT_optimize
         static public Complex[] Calc_DFT(double[] arr, int l, int a=0)
         {
             int N = l;
-            double[] data = new double[l];
             Complex[] dft = new Complex[N];
             int n = 0, k = 0;
             double pi = Math.PI;
             double Real = 0, Imag = 0;
 
-            for(int i=0; i<l; i++)
-            {
-                data[i] = arr[i + a + l];
-            }
-            
             var ForDFT = Parallel.For(0, N, (i, state) => {
                 Real = Imag = 0;
 
@@ -29,8 +23,15 @@ namespace DFT_optimize
 
                 for (k = 0; k < N; k++)
                 {
-                    Real += data[i] * Math.Cos(2 * pi * i * k / N);
-                    Imag -= data[i] * Math.Sin(2 * pi * i * k / N);
+                    try
+                    {
+                        Real += arr[i + a + l] * Math.Cos(2 * pi * i * k / N);
+                        Imag -= arr[i + a + l] * Math.Sin(2 * pi * i * k / N);
+                    }
+                    catch(Exception e)
+                    {
+                        break;
+                    }
                 }
 
                 dft[i].real = Real;
@@ -40,37 +41,29 @@ namespace DFT_optimize
             return dft;
         }
 
-        static public double[,] optimized_DFT(double[] arr, int l, int a=0)
+        static public double[] optimized_DFT(double[] arr, int l, int k=0, int a=0)
         {
-            double[,] dft = new double[l, 2];
+            // double[,] dft = new double[l, 2];
+            double[] dft = new double[2];
             int q = (int)Math.Log(l, 2);
-            int q1 = q / 2;
+            int q1 = q / 3;
             int q2 = q - q1;
             int p = (int)(Math.Pow(2, q2));
             int s = (int)(Math.Pow(2, q1));
             double A = 0, B = 0;
 
-            var ForDFT = Parallel.For(0, l, (k, state) => {
-                dft[k, 0] = 0;
-                dft[k, 1] = 0;
+            var ForDFT = Parallel.For(0, s, (u, state) => {
+                A = 0;
+                B = 0;
 
-                for (int u=0; u<s; u+=8)
+                for (int v = 0; v < p; v += 2)
                 {
-                    A = 0;
-                    B = 0;
-
-                    for (int v = 0; v < p; v+=8)
-                    {
-                        A = 0.5 * (arr[a + (s - 1) * v + u] + arr[a + (s - 1) * v + u + 1]) * Math.Cos(2 * Math.PI * (s - 1) * v / l);
-                        B = 0.5 * (arr[a + (s - 1) * v + u] + arr[a + (s - 1) * v + u + 1]) * Math.Sin(2 * Math.PI * (s - 1) * v / l);
-                    }
-
-                    dft[k, 0] += A * Math.Cos(2 * Math.PI * k * u / l) - B * Math.Sin(2 * Math.PI * k * u / l);
-                    dft[k, 1] += B * Math.Cos(2 * Math.PI * k * u / l) + A * Math.Sin(2 * Math.PI * k * u / l);
+                    A = 0.5 * (arr[a + (s - 1) * v + u] + arr[a + (s - 1) * v + u + 1]) * Math.Cos(2 * Math.PI * (s - 1) * v / l);
+                    B = 0.5 * (arr[a + (s - 1) * v + u] + arr[a + (s - 1) * v + u + 1]) * Math.Sin(2 * Math.PI * (s - 1) * v / l);
                 }
 
-                dft[k, 0] /= l;
-                dft[k, 1] /= l;
+                dft[0] += A * Math.Cos(2 * Math.PI * k * u / l) - B * Math.Sin(2 * Math.PI * k * u / l);
+                dft[1] += B * Math.Cos(2 * Math.PI * k * u / l) + A * Math.Sin(2 * Math.PI * k * u / l);
             });
 
             return dft;

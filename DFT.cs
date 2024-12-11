@@ -59,7 +59,7 @@ namespace DFT_optimize
                     A = 0;
                     B = 0;
 
-                    for (int v = 0; v < p; v+=4)
+                    for (int v = 0; v < p; v+=8)
                     {
                         A = 0.5 * (arr[a + (s - 1) * v + u] + arr[a + (s - 1) * v + u + 1]) * Math.Cos(2 * Math.PI * (s - 1) * v / l);
                         B = 0.5 * (arr[a + (s - 1) * v + u] + arr[a + (s - 1) * v + u + 1]) * Math.Sin(2 * Math.PI * (s - 1) * v / l);

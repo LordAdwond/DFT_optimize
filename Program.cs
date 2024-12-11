@@ -15,7 +15,7 @@ namespace DFT_optimize
             String str;
             Stopwatch stopwatch = new Stopwatch();
             int N = 0, i=0;
-            int l = 512, step = 300;
+            int l = 512, step = 400;
             int dl = 2 * l;
             int acc = 1;
 

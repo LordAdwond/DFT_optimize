@@ -54,7 +54,7 @@ namespace DFT_optimize
                 dft[k, 0] = 0;
                 dft[k, 1] = 0;
 
-                for (int u=0; u<s; u+=4)
+                for (int u=0; u<s; u+=8)
                 {
                     A = 0;
                     B = 0;
@@ -105,16 +105,15 @@ namespace DFT_optimize
             Complex[] even = new Complex[n / 2];
             Complex[] odd = new Complex[n / 2];
 
-            for (int i = 0; i < n / 2; i++)
-            {
+            var ForDFT = Parallel.For(0, n / 2, (i, state) => {
                 even[i] = data[2 * i];
                 odd[i] = data[2 * i + 1];
-            }
+            });
 
             FFTRecursive(even);
             FFTRecursive(odd);
 
-            var ForDFT = Parallel.For(0, n/2, (k, state) => {
+            var ForDFT1 = Parallel.For(0, n/2, (k, state) => {
                 Complex t = Complex.Exp(new Complex(-2 * Math.PI * odd[k].imag * k / n, 0)) * odd[k];
                 data[k] = even[k] + t;
                 data[k + n / 2] = even[k] - t;

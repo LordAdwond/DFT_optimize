@@ -15,7 +15,7 @@ namespace DFT_optimize
             String str;
             Stopwatch stopwatch = new Stopwatch();
             int N = 0, i=0;
-            int l = 1024, step = 256;
+            int l = 512, step = 300;
             int dl = 2 * l;
             int acc = 1;
 
@@ -23,7 +23,7 @@ namespace DFT_optimize
             N = File.ReadAllLines("data/channel0.txt").Length;
             double[,] samples = new double[4, N];
 
-            for (int channel = 0; channel < 4; channel++)
+            for (int channel = 0; channel < 1; channel++)
             {
                 String[] signal_str_values = File.ReadAllLines($"data/channel{channel}.txt");
                 N = signal_str_values.Length;
@@ -37,16 +37,23 @@ namespace DFT_optimize
 
             Console.WriteLine("Testing DFT");
             stopwatch.Start();
-            for (int channel=0; channel<4; channel++)
+            for (int channel=0; channel<1; channel++)
             {
                 double[] arr = new double[N];
                 for (i = 0; i < N; i++)
                 {
                     arr[i] = samples[channel, i];
                 }
-                for(int a=0; a<N; a+=step)
+                for(int a=0; a<N - dl * acc; a+=step)
                 {
-                    var dft = DFT.Calc_DFT(arr, dl * acc, a); // usual DFT
+                    try
+                    {
+                        var dft = DFT.Calc_DFT(arr, dl * acc, a); // usual DFT
+                    }
+                    catch (Exception e)
+                    {
+                        break;
+                    }
                 }
             }
             stopwatch.Stop();
@@ -54,16 +61,23 @@ namespace DFT_optimize
 
             Console.WriteLine("Testing modifide DFT");
             stopwatch.Start();
-            for (int channel = 0; channel < 4; channel++)
+            for (int channel = 0; channel < 1; channel++)
             {
                 double[] arr = new double[N];
                 for (i = 0; i < N; i++)
                 {
                     arr[i] = samples[channel, i];
                 }
-                for (int a = 0; a < N; a += step)
+                for (int a = 0; a < N - dl * acc; a += step)
                 {
-                    var dft = DFT.optimized_DFT(arr, dl * acc, a); // optimized DFT
+                    try
+                    {
+                        var dft = DFT.optimized_DFT(arr, dl * acc, a); // optimized DFT
+                    }
+                    catch (Exception e)
+                    {
+                        break;
+                    }
                 }
             }
             stopwatch.Stop();
@@ -74,13 +88,20 @@ namespace DFT_optimize
             for (int channel = 0; channel < 4; channel++)
             {
                 double[] arr = new double[N];
-                for (i = 0; i < N; i++)
+                for (i = 0; i < N - dl * acc; i++)
                 {
                     arr[i] = samples[channel, i];
                 }
-                for (int a = 0; a < N; a += step)
+                for (int a = 0; a < N - dl * acc; a += step)
                 {
-                    var dft = DFT.FFT_Cooley_Tukey(arr, dl * acc, a); // Cooley-Tuley method
+                    try
+                    {
+                        var dft = DFT.FFT_Cooley_Tukey(arr, dl * acc, a); // Cooley-Tuley method
+                    }
+                    catch (Exception e)
+                    {
+                        break;
+                    }
                 }
             }
             stopwatch.Stop();

@@ -41,29 +41,82 @@ namespace DFT_optimize
             return dft;
         }
 
-        static public double[] optimized_DFT(double[] arr, int l, int k=0, int a=0)
+        static public double[,] optimized_DFT(double[] arr, int l, int u, int a=0)
         {
-            // double[,] dft = new double[l, 2];
-            double[] dft = new double[2];
+            double[,] dft = new double[l, 2];
+            /*
+            // double[] dft = new double[2];
             int q = (int)Math.Log(l, 2);
-            int q1 = q / 3;
+            int q1 = q / 2;
             int q2 = q - q1;
             int p = (int)(Math.Pow(2, q2));
             int s = (int)(Math.Pow(2, q1));
-            double A = 0, B = 0;
+            double A = 0, B = 0, F = 0;
 
-            var ForDFT = Parallel.For(0, s, (u, state) => {
-                A = 0;
-                B = 0;
-
-                for (int v = 0; v < p; v += 2)
+            var ForDFT = Parallel.For(0, l, (k, state) => {
+                for (int u = 0; u < s; u += 16)
                 {
-                    A = 0.5 * (arr[a + (s - 1) * v + u] + arr[a + (s - 1) * v + u + 1]) * Math.Cos(2 * Math.PI * (s - 1) * v / l);
-                    B = 0.5 * (arr[a + (s - 1) * v + u] + arr[a + (s - 1) * v + u + 1]) * Math.Sin(2 * Math.PI * (s - 1) * v / l);
+                    A = 0;
+                    B = 0;
+
+                    for (int v = 0; v < p; v += 8)
+                    {
+                        F = arr[a + (s - 1) * v + u];
+                        A += F * Math.Cos(2 * Math.PI * (s - 1) * k * v / l);
+                        B += F * Math.Sin(2 * Math.PI * (s - 1) * k * v / l);
+                    }
+                    
+                    dft[k, 0] += A * Math.Cos(2 * Math.PI * k * u / l) - B * Math.Sin(2 * Math.PI * k * u / l);
+                    dft[k, 1] += B * Math.Cos(2 * Math.PI * k * u / l) + A * Math.Sin(2 * Math.PI * k * u / l);
                 }
 
-                dft[0] += A * Math.Cos(2 * Math.PI * k * u / l) - B * Math.Sin(2 * Math.PI * k * u / l);
-                dft[1] += B * Math.Cos(2 * Math.PI * k * u / l) + A * Math.Sin(2 * Math.PI * k * u / l);
+            });
+            */
+
+            double A = 0, B = 0, add = 0;
+            double L = 0;
+            int n = 0, m = 0, p = 0;
+            double[] alpha = new double[u + 1], beta = new double[u + 1];
+            double[,] r = new double[l, u + 1];
+
+            var ForCoefs1 = Parallel.For(0, l, (k, state) => {
+                L = 2 * Math.PI * k / l;
+                int limit = Math.Min(u, r.GetLowerBound(1));
+
+                for (m=0; m<limit; m++)
+                {
+                    if(m==0)
+                    {
+                        r[k, m] = Math.Pow(L, 2) / 2;
+                    }
+                    else if(m>0)
+                    {
+                        r[k, m] = r[k, m-1] * Math.Pow(L, 2) / ((m + 1)* (m + 2));
+                    }
+                }
+            });
+
+            var ForCoefs2 = Parallel.For(0, u + 1, (M, state) => {
+                alpha[M] = beta[M] = 0;
+
+                for (n = 0; n < l; n++)
+                {
+                    alpha[M] += arr[a + n] * Math.Pow(n, 2 * m);
+                    beta[M] += alpha[M] * n;
+                }
+            });
+
+            var ForDFT = Parallel.For(0, l, (k, state) => {
+                L = 2 * Math.PI * k / l;
+                dft[k, 0] = dft[k, 1] = 0;
+                int limit = Math.Min(alpha.Length, beta.Length);
+                limit = Math.Min(limit, r.GetLowerBound(1));
+
+                for (m=0; m<limit; m++)
+                {
+                    dft[k, 0] += Math.Pow(-1, m) * alpha[m] * r[k, m];
+                    dft[k, 1] += Math.Pow(-1, m) * beta[m] * L * r[k, m] / (2 * m + 1);
+                }
             });
 
             return dft;

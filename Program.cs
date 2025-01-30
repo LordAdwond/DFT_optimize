@@ -15,7 +15,7 @@ namespace DFT_optimize
             String str;
             Stopwatch stopwatch = new Stopwatch();
             int N = 0, i=0, k=0;
-            int l = 512, step = 100;
+            int l = 64, step = 500;
             int dl = 2 * l;
             int acc = 1;
             bool to_continue = true;
@@ -24,7 +24,7 @@ namespace DFT_optimize
             N = File.ReadAllLines("data/channel0.txt").Length;
             double[,] samples = new double[4, N];
 
-            for (int channel = 0; channel < 4; channel++)
+            for (int channel = 0; channel < 1; channel++)
             {
                 String[] signal_str_values = File.ReadAllLines($"data/channel{channel}.txt");
                 N = signal_str_values.Length;
@@ -95,10 +95,7 @@ namespace DFT_optimize
                     {
                         try
                         {
-                            for (k = 0; k < 128 * acc; k++) // обчислення амплітуд для 1-128 Гц
-                            {
-                                var dft = DFT.optimized_DFT(arr, dl * acc, k + 1, a); // optimized DFT
-                            }
+                            var dft = DFT.optimized_DFT(arr, dl * acc, 10, a); // optimized DFT
                         }
                         catch (Exception e)
                         {
